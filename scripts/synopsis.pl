@@ -21,7 +21,7 @@ my(@data) =
 	{height => '1 cm'},			# Pass.
 	{height => '1m'},			# Pass.
 	{height	=> '40-70.5cm'},	# Pass.
-	{height	=> '1.5-2m'},		# Pass.
+	{height	=> '1.5 -2 m'},		# Pass.
 	{height => 'z1'},			# Fail. Not numeric.
 );
 

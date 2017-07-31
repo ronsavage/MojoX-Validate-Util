@@ -71,7 +71,7 @@ sub add_dimension_check
 			# We permit exactly 1 copy of one of the args.
 			# This means you cannot omit the arg and default to something.
 
-			return 1 if ($value !~ /^([0-9.]+)(-[0-9.]+)?\s*(?:$args){1,1}$/);
+			return 1 if ($value !~ /^([0-9.]+)(\s*-\s*[0-9.]+)?\s*(?:$args){1,1}$/);
 
 			my($one, $two)	= ($1, $2 || '');
 			$two			= substr($two, 1) if (substr($two, 0, 1) eq '-');
@@ -425,7 +425,7 @@ $units = ['cm', 'm'], and the corresponding return values:
 
 =item o {height => '40-70.5cm'}: returns 1
 
-=item o {height => '1.5-2 m'}: returns 1
+=item o {height => '1.5 -2 m'}: returns 1
 
 =back
 
