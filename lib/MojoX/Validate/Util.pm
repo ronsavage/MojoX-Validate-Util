@@ -201,11 +201,13 @@ sub check_optional
 
 	$self -> validation -> input($params);
 
-	return (length($$params{$topic}) == 0)
-			|| $self
-			-> validation
-			-> optional($topic)
-			-> is_valid;
+	return defined($$params{$topic})
+			? (length($$params{$topic}) == 0)
+				|| $self
+				-> validation
+				-> optional($topic)
+				-> is_valid
+			: 0;
 
 } # End of check_optional.
 
@@ -253,7 +255,8 @@ C<MojoX::Validate::Util> - A very convenient wrapper around Mojolicious::Validat
 
 =head1 Synopsis
 
-This program ships as scripts/synopsis.pl:
+This program ships as scripts/synopsis.pl.
+It is a copy of t/01.range.t, without the Test::More parts.
 
 	#!/usr/bin/env perl
 
@@ -265,7 +268,7 @@ This program ships as scripts/synopsis.pl:
 	# ------------------------------------------------
 	# This is a copy of t/01.range.t, without the Test::More parts.
 
-	my(%count)		= (pass => 0, total => 0);
+	my(%count)		= (fail => 0, pass => 0, total => 0);
 	my($checker)	= MojoX::Validate::Util -> new;
 
 	$checker -> add_dimension_check;
@@ -279,30 +282,53 @@ This program ships as scripts/synopsis.pl:
 		{height => '1m'},			# Pass.
 		{height	=> '40-70.5cm'},	# Pass.
 		{height	=> '1.5-2m'},		# Pass.
-		{height => 'z1'},			# Fail.
+		{height => 'z1'},			# Fail. Not numeric.
 	);
 
 	my($expected);
-	my($infix);
+	my($params);
 
-	for my $params (@data)
+	for my $i (0 .. $#data)
 	{
 		$count{total}++;
+
+		$params		= $data[$i];
+		$expected	= ( ($i == 1) || ($i == $#data) ) ? 0 : 1;
+
+		$count{fail}++ if ($expected == 0);
 
 		$count{pass}++ if ($checker -> check_dimension($params, 'height', ['cm', 'm']) == 1);
 	}
 
-	$count{total}++;
+	@data =
+	(
+		{x => undef},	# Fail.
+		{x => ''},		# Pass.
+		{x => '0'},		# Pass.
+		{x => 0},		# Pass.
+		{x => 1},		# Pass.
+	);
 
-	$count{pass}++ if ($checker -> check_optional({x => ''}, 'x') == 1);
+	for my $i (0 .. $#data)
+	{
+		$count{total}++;
+
+		$params		= $data[$i];
+		$expected	= ($i == 0) ? 0 : 1;
+
+		$count{fail}++ if ($expected == 0);
+
+		$count{pass}++ if ($checker -> check_optional($params, 'x') == 1);
+	}
 
 	print "Test counts: \n", join("\n", map{"$_: $count{$_}"} sort keys %count), "\n";
 
 This is the printout of synopsis.pl:
 
 	Test counts:
-	pass: 8
-	total: 9
+	fail: 3
+	pass: 10
+	total: 13
 
 See also t/*.t.
 
@@ -349,11 +375,11 @@ C<new() does not take any parameters.
 
 =head2 add_dimension_check()
 
-Called in BEGIN(). The check itself is called C<dimension>.
+Called in BEGIN(). The check itself is called C<dimension>, and it is used by calling C<check_dimension>.
 
 =head2 add_url_check()
 
-Called in BEGIN(). The check itself is called C<url>.
+Called in BEGIN(). The check itself is called C<url>, and it is used by calling C<check_url>.
 
 This method uses L<URI::Find::Schemeless>.
 
@@ -370,6 +396,19 @@ This method uses L<URI::Find::Schemeless>.
 =head2 check_natural_number($params, $topic)
 
 =head2 check_optional($params, $topic)
+
+$params must be a hashref. Called as check_optional({$key => $value, ...}, $key).
+
+For some non-undef $key, this lists some sample values for $value and the corresponding return
+value:
+
+=over 4
+
+=item o undef returns 0
+
+=item o All other values return 1
+
+=back
 
 =head2 check_required($params, $topic)
 

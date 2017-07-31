@@ -8,7 +8,7 @@ use MojoX::Validate::Util;
 # ------------------------------------------------
 # This is a copy of t/01.range.t, without the Test::More parts.
 
-my(%count)		= (pass => 0, total => 0);
+my(%count)		= (fail => 0, pass => 0, total => 0);
 my($checker)	= MojoX::Validate::Util -> new;
 
 $checker -> add_dimension_check;
@@ -22,21 +22,43 @@ my(@data) =
 	{height => '1m'},			# Pass.
 	{height	=> '40-70.5cm'},	# Pass.
 	{height	=> '1.5-2m'},		# Pass.
-	{height => 'z1'},			# Fail.
+	{height => 'z1'},			# Fail. Not numeric.
 );
 
 my($expected);
-my($infix);
+my($params);
 
-for my $params (@data)
+for my $i (0 .. $#data)
 {
 	$count{total}++;
+
+	$params		= $data[$i];
+	$expected	= ( ($i == 1) || ($i == $#data) ) ? 0 : 1;
+
+	$count{fail}++ if ($expected == 0);
 
 	$count{pass}++ if ($checker -> check_dimension($params, 'height', ['cm', 'm']) == 1);
 }
 
-$count{total}++;
+@data =
+(
+	{x => undef},	# Fail.
+	{x => ''},		# Pass.
+	{x => '0'},		# Pass.
+	{x => 0},		# Pass.
+	{x => 1},		# Pass.
+);
 
-$count{pass}++ if ($checker -> check_optional({x => ''}, 'x') == 1);
+for my $i (0 .. $#data)
+{
+	$count{total}++;
+
+	$params		= $data[$i];
+	$expected	= ($i == 0) ? 0 : 1;
+
+	$count{fail}++ if ($expected == 0);
+
+	$count{pass}++ if ($checker -> check_optional($params, 'x') == 1);
+}
 
 print "Test counts: \n", join("\n", map{"$_: $count{$_}"} sort keys %count), "\n";
