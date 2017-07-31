@@ -115,9 +115,9 @@ sub add_url_check
 
 sub check_count
 {
-	my($self, $params, $topic, $count) = @_;
+	my($self, $params, $topic, $expected) = @_;
 
-	return $$params{$topic} == $count ? 1 : 0;
+	return $$params{$topic} == $expected ? 1 : 0;
 
 } # End of check_count.
 
@@ -375,17 +375,59 @@ C<new() does not take any parameters.
 
 =head2 add_dimension_check()
 
-Called in BEGIN(). The check itself is called C<dimension>, and it is used by calling C<check_dimension>.
+Called in BEGIN(). The check itself is called C<dimension>, and it is used by calling
+L</check_dimension($params, $topic, $units)>.
 
 =head2 add_url_check()
 
-Called in BEGIN(). The check itself is called C<url>, and it is used by calling C<check_url>.
+Called in BEGIN(). The check itself is called C<url>, and it is used by calling
+L</check_url($params, $topic)>.
 
 This method uses L<URI::Find::Schemeless>.
 
-=head2 check_count($params, $topic, $count)
+=head2 check_count($params, $topic, $expected)
+
+$params must be a hashref.
+
+Called as check_count({$topic => $value, ...}, $topic, $expected)
+
+For some non-undef $topic, $value and $expected, here are some sample values for $value and $count, and
+the corresponding return values:
+
+=over 4
+
+=item o $value == 99 and $expected != 99: returns 0
+
+=item o $value == 99 and $expected == 99: returns 1
+
+=back
 
 =head2 check_dimension($params, $topic, $units)
+
+$params must be a hashref and $units must be an arrayref of strings.
+
+Called as check_optional({$topic => $value, ...}, $topic, [...]).
+
+For some non-undef $topic, $value and $units, here are some sample values for the hashref,
+$units = ['cm', 'm'], and the corresponding return values:
+
+=over 4
+
+=item o {height => ''}: returns 1 (sic)
+
+=item o {height => '1'}: returns 0
+
+=item o {height => '1cm'}: returns 1
+
+=item o {height => '1 cm'}: returns 1
+
+=item o {height => '1m'}: returns 1
+
+=item o {height => '40-70.5cm'}: returns 1
+
+=item o {height => '1.5-2 m'}: returns 1
+
+=back
 
 =head2 check_equal_to($params, $topic, $expected)
 
@@ -397,16 +439,18 @@ This method uses L<URI::Find::Schemeless>.
 
 =head2 check_optional($params, $topic)
 
-$params must be a hashref. Called as check_optional({$key => $value, ...}, $key).
+$params must be a hashref.
 
-For some non-undef $key, this lists some sample values for $value and the corresponding return
-value:
+Called as check_optional({$topic => $value, ...}, $topic).
+
+For some non-undef $topic, here are some sample values for $value and the corresponding return
+values:
 
 =over 4
 
-=item o undef returns 0
+=item o undef: returns 0
 
-=item o All other values return 1
+=item o All other values: return 1
 
 =back
 
@@ -430,7 +474,16 @@ Returns an object of type L<Mojolicious::Validator>
 
 =head1 FAQ
 
+=head2 Why did you prefix all the method names with 'check_'?
+
+In order to clarify which methods are part of this module and which are within
+L<Mojolicious::Validator> or L<Mojolicious::Validator::Validation>.
+
 =head1 See Also
+
+L<Mojolicious::Validator>
+
+L<Mojolicious::Validator::Validation>
 
 =head1 Machine-Readable Change Log
 
