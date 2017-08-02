@@ -111,17 +111,6 @@ sub add_url_check
 } # End of add_url_check.
 
 # -----------------------------------------------
-# Warning: Returns 1 for valid!
-
-sub check_count
-{
-	my($self, $params, $topic, $expected) = @_;
-
-	return $$params{$topic} == $expected ? 1 : 0;
-
-} # End of check_count.
-
-# -----------------------------------------------
 
 sub check_dimension
 {
@@ -192,6 +181,17 @@ sub check_natural_number
 	return ( (length($value) == 0) || ($value !~ /^[0-9]+$/) ) ? 0 : 1;
 
 } # End of check_natural_number.
+
+# -----------------------------------------------
+# Warning: Returns 1 for valid!
+
+sub check_number
+{
+	my($self, $params, $topic, $expected) = @_;
+
+	return $$params{$topic} == $expected ? 1 : 0;
+
+} # End of check_number.
 
 # -----------------------------------------------
 
@@ -275,14 +275,14 @@ It is a copy of t/01.range.t, without the Test::More parts.
 
 	my(@data) =
 	(
-		{height => ''},				# Pass.
-		{height => '1'},			# Fail. No unit.
-		{height => '1cm'},			# Pass.
-		{height => '1 cm'},			# Pass.
-		{height => '1m'},			# Pass.
-		{height	=> '40-70.5cm'},	# Pass.
-		{height	=> '1.5-2m'},		# Pass.
-		{height => 'z1'},			# Fail. Not numeric.
+		{height => ''},          # Pass.
+		{height => '1'},         # Fail. No unit.
+		{height => '1cm'},       # Pass.
+		{height => '1 cm'},      # Pass.
+		{height => '1m'},        # Pass.
+		{height	=> '40-70.5cm'}, # Pass.
+		{height	=> '1.5-2m'},    # Pass.
+		{height => 'z1'},        # Fail. Not numeric.
 	);
 
 	my($expected);
@@ -302,11 +302,11 @@ It is a copy of t/01.range.t, without the Test::More parts.
 
 	@data =
 	(
-		{x => undef},	# Fail.
-		{x => ''},		# Pass.
-		{x => '0'},		# Pass.
-		{x => 0},		# Pass.
-		{x => 1},		# Pass.
+		{x => undef}, # Fail.
+		{x => ''},    # Pass.
+		{x => '0'},   # Pass.
+		{x => 0},     # Pass.
+		{x => 1},     # Pass.
 	);
 
 	for my $i (0 .. $#data)
@@ -385,31 +385,39 @@ L</check_url($params, $topic)>.
 
 This method uses L<URI::Find::Schemeless>.
 
-=head2 check_count($params, $topic, $expected)
+=head2 check_dimension($params, $topic, $units)
 
-$params must be a hashref.
-
-Called as check_count({$topic => $value, ...}, $topic, $expected)
-
-For some non-undef $topic, $value and $expected, here are some sample values for $value and $count, and
-the corresponding return values:
+Parameters:
 
 =over 4
 
-=item o $value == 99 and $expected != 99: returns 0
+=item o $params => A hashref
 
-=item o $value == 99 and $expected == 99: returns 1
+E.g.: $params = {height => $value, ...}.
+
+=item o $topic => The name of the parameter being tested
+
+E.g.: $topic = 'height'.
+
+=item o $value => A string containing a floating point number followed by one of the abbreviations
+
+Or, the string can contain 2 floating point numbers separated by a hyphen, followed by one of the
+abbreviations.
+
+Spaces can be used liberally within the string, but of course not within the numbers.
+
+So the code tests $$params{$topic} = $value.
+
+=item o $units => An arrayref of strings of unit names or abbreviations
+
+E.g.: $units = ['cm', 'm'].
 
 =back
 
-=head2 check_dimension($params, $topic, $units)
+Return value: The integer (0 or 1) returned by L<Mojolicious::Validator::Validation#is_valid>.
 
-$params must be a hashref and $units must be an arrayref of strings.
-
-Called as check_optional({$topic => $value, ...}, $topic, [...]).
-
-For some non-undef $topic, $value and $units, here are some sample values for the hashref,
-$units = ['cm', 'm'], and the corresponding return values:
+For some non-undef $topic, $value and $units, here are some sample values for the hashref
+and the corresponding return values (using $units = ['cm', 'm']):
 
 =over 4
 
@@ -429,13 +437,97 @@ $units = ['cm', 'm'], and the corresponding return values:
 
 =back
 
-=head2 check_equal_to($params, $topic, $expected)
+Note: This method uses both L<Mojolicious::Validator> and L<Mojolicious::Validator::Validation>.
 
-=head2 check_key_exists()
+=head2 check_equal_to($params, $topic, $other_topic)
+
+Parameters:
+
+=over 4
+
+=item o $params => A hashref
+
+E.g.: $params = {password => $value_1, confirm_password => $value_2, ...}.
+
+=item o $topic => The name of the parameter being tested
+
+E.g.: $topic = 'password'.
+
+=item o $other_topic => The name of the other key within $params whose value should match $value_1
+
+E.g.: $other_topic = 'confirm_password'.
+
+So the code tests (using eq) $$params{$topic} = $value_1 with $$params{$other_topic} = $value_2.
+
+=back
+
+Return value: The integer (0 or 1) returned by L<Mojolicious::Validator::Validation#is_valid>.
+
+Note: This method uses both L<Mojolicious::Validator> and L<Mojolicious::Validator::Validation>.
+
+See also L</check_natural_number($params, $topic, $expected)>.
+
+=head2 check_key_exists($params, $topic)
+
+$params must be a hashref.
+
+Called as check_key_exists({$topic => $value, ...}, $topic).
+
+For some non-undef $topic, here are some sample values for $params and the corresponding
+return values (using $value = 'x'):
+
+=over 4
+
+=item o {}: returns 0
+
+=item o {x => undef}: returns 1
+
+=item o {x => ''}: returns 1
+
+=item o {x => '0'}: returns 1
+
+=item o {x => 0}: returns 1
+
+=item o {x => 'a'}: returns 1
+
+=back
+
+This method uses neither L<Mojolicious::Validator> nor L<Mojolicious::Validator::Validation>.
 
 =head2 check_member($params, $topic, $set)
 
 =head2 check_natural_number($params, $topic)
+
+=head2 check_number($params, $topic, $expected)
+
+$params must be a hashref.
+
+Called as check_number({$topic => $value, ...}, $topic, $expected).
+
+For some non-undef $topic, $value and $expected, here are some sample values for $value and $count,
+and the corresponding return values:
+
+=over 4
+
+=item o $value == 99 and $expected != 99: returns 0
+
+=item o $value == 99 and $expected == 99: returns 1
+
+=back
+
+Notes:
+
+=over 4
+
+=item o The method does a numeric test for equality.
+
+For a string test, see L</check_equal_to($params, $topic, $expected)>.
+
+=item o This method uses neither L<Mojolicious::Validator> nor L<Mojolicious::Validator::Validation>.
+
+=back
+
+See also L</check_equal_to($params, $topic, $expected)>.
 
 =head2 check_optional($params, $topic)
 
