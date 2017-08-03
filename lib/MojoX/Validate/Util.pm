@@ -133,7 +133,7 @@ sub check_dimension
 	return (length($$params{$topic}) == 0)
 			|| $self
 			-> validation
-			-> required($topic, 'trim')
+			-> required($topic)
 			-> dimension(@$units)
 			-> is_valid;
 
@@ -149,7 +149,7 @@ sub check_equal_to
 
 	return $self
 			-> validation
-			-> required($topic, 'trim')
+			-> required($topic)
 			-> equal_to($expected)
 			-> is_valid;
 
@@ -176,7 +176,7 @@ sub check_member
 
 	return $self
 			-> validation
-			-> required($topic, 'trim')
+			-> required($topic)
 			-> in(@$set)
 			-> is_valid;
 
@@ -201,13 +201,10 @@ sub check_optional
 
 	$self -> validation -> input($params);
 
-	return defined($$params{$topic})
-			? (length($$params{$topic}) == 0)
-				|| $self
-				-> validation
-				-> optional($topic)
-				-> is_valid
-			: 0;
+	return ! $self
+			-> validation
+			-> optional($topic)
+			-> is_valid;
 
 } # End of check_optional.
 
@@ -221,7 +218,7 @@ sub check_required
 
 	return $self
 			-> validation
-			-> required($topic, 'trim')
+			-> required($topic)
 			-> is_valid;
 
 } # End of check_required.
@@ -237,7 +234,7 @@ sub check_url
 	return (length($$params{$topic}) == 0)
 			|| $self
 			-> validation
-			-> required($topic, 'trim')
+			-> required($topic)
 			-> url
 			-> is_valid;
 
@@ -298,27 +295,6 @@ It is a copy of t/01.range.t, without the Test::More parts.
 		$count{fail}++ if ($expected == 0);
 
 		$count{pass}++ if ($checker -> check_dimension($params, 'height', ['cm', 'm']) == 1);
-	}
-
-	@data =
-	(
-		{x => undef}, # Fail.
-		{x => ''},    # Pass.
-		{x => '0'},   # Pass.
-		{x => 0},     # Pass.
-		{x => 1},     # Pass.
-	);
-
-	for my $i (0 .. $#data)
-	{
-		$count{total}++;
-
-		$params		= $data[$i];
-		$expected	= ($i == 0) ? 0 : 1;
-
-		$count{fail}++ if ($expected == 0);
-
-		$count{pass}++ if ($checker -> check_optional($params, 'x') == 1);
 	}
 
 	print "Test counts: \n", join("\n", map{"$_: $count{$_}"} sort keys %count), "\n";
@@ -646,45 +622,6 @@ See also L</check_ascii_digits($params, $topic)> and
 L</check_equal_to($params, $topic, $other_topic)>.
 
 Note: This method uses neither L<Mojolicious::Validator> nor L<Mojolicious::Validator::Validation>.
-
-=head2 check_optional($params, $topic)
-
-Parameters:
-
-=over 4
-
-=item o $params => A hashref
-
-E.g.: $params = {download_now => $value, ...}.
-
-=item o $topic => The name of the parameter being tested
-
-E.g.: $topic = 'download_now'.
-
-=back
-
-Return value: Integer (0 or 1):
-
-=over 4
-
-=item o 0 => Invalid
-
-=item o 1 => Valid
-
-=back
-
-For some non-undef $topic, here are some sample values for $value and the corresponding return
-values:
-
-=over 4
-
-=item o {x => undef}: returns 0
-
-=item o {x => 0}: return 1
-
-Apart from undef, all other values of $value return 1.
-
-=back
 
 =head2 check_required($params, $topic)
 

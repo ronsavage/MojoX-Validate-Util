@@ -3,6 +3,8 @@
 use strict;
 use warnings;
 
+use Data::Dumper::Concise; # For Dumper().
+
 use Test::More;
 
 use MojoX::Validate::Util;
@@ -37,25 +39,6 @@ for my $i (0 .. $#data)
 	$message	= "Height '$$params{height}' is ${infix}a valid height";
 
 	ok($checker -> check_dimension($params, 'height', ['cm', 'm']) == $expected, $message); $test_count++;
-}
-
-@data =
-(
-	{x => undef},	# Fail.
-	{x => ''},		# Pass.
-	{x => '0'},		# Pass.
-	{x => 0},		# Pass.
-	{x => 'x'},		# Pass.
-);
-
-for my $i (0 .. $#data)
-{
-	$params		= $data[$i];
-	$expected	= ($i == 0) ? 0 : 1;
-	$infix		= $expected ? '' : 'not ';
-	$message	= (defined($$params{x}) ? "'$$params{x}'" : 'undef') . " is ${infix}an optional parameter";
-
-	ok($checker -> check_optional($params, 'x') == $expected, $message); $test_count++;
 }
 
 print "# Internal test count: $test_count\n";

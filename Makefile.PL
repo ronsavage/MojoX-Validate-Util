@@ -31,7 +31,7 @@ my(%params) =
 	PL_FILES  => {},
 	PREREQ_PM =>
 	{
-		'Mojolicious'				=> 7.33,
+		'Mojolicious'				=> 7.38,
 		'Mojolicious::Validator'	=> 0,
 		'Moo'						=> 2.003000,
 		'Params::Classify'			=> 0.013,
