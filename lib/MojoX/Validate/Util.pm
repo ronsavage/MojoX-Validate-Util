@@ -111,6 +111,18 @@ sub add_url_check
 } # End of add_url_check.
 
 # -----------------------------------------------
+# Warning: Returns 1 for valid!
+
+sub check_ascii_digits
+{
+	my($self, $params, $topic)	= @_;
+	my($value)					= $$params{$topic};
+
+	return ( (length($value) == 0) || ($value !~ /^[0-9]+$/) ) ? 0 : 1;
+
+} # End of check_ascii_digits.
+
+# -----------------------------------------------
 
 sub check_dimension
 {
@@ -169,18 +181,6 @@ sub check_member
 			-> is_valid;
 
 } # End of check_member.
-
-# -----------------------------------------------
-# Warning: Returns 1 for valid!
-
-sub check_natural_number
-{
-	my($self, $params, $topic)	= @_;
-	my($value)					= $$params{$topic};
-
-	return ( (length($value) == 0) || ($value !~ /^[0-9]+$/) ) ? 0 : 1;
-
-} # End of check_natural_number.
 
 # -----------------------------------------------
 # Warning: Returns 1 for valid!
@@ -369,7 +369,7 @@ C<new()> is called as C<< my($parser) = MojoX::Validate::Util -> new >>.
 
 It returns a new object of type C<MojoX::Validate::Util>.
 
-C<new() does not take any parameters.
+C<new()> does not take any parameters.
 
 =head1 Methods
 
@@ -384,6 +384,47 @@ Called in BEGIN(). The check itself is called C<url>, and it is used by calling
 L</check_url($params, $topic)>.
 
 This method uses L<URI::Find::Schemeless>.
+
+=head2 check_ascii_digits($params, $topic)
+
+This test uses 2 steps:
+
+=over 4
+
+=item o The length of $$params{$topic} must be > 0, and
+
+=item o All digits in $$params{$topic} must be in the set [0-9]
+
+=back
+
+Parameters:
+
+=over 4
+
+=item o $params => A hashref
+
+E.g.: $params = {age => $value, ...}.
+
+=item o $topic => The name of the parameter being tested
+
+E.g.: $topic = 'age'.
+
+=back
+
+Return value: Integer (0 or 1):
+
+=over 4
+
+=item o 0 => Invalid
+
+=item o 1 => Valid
+
+=back
+
+See also L</check_equal_to($params, $topic, $other_topic)> and
+L</check_number($params, $topic, $expected)>.
+
+Note: This method uses neither L<Mojolicious::Validator> nor L<Mojolicious::Validator::Validation>.
 
 =head2 check_dimension($params, $topic, $units)
 
@@ -414,7 +455,15 @@ E.g.: $units = ['cm', 'm'].
 
 =back
 
-Return value: The integer (0 or 1) returned by L<Mojolicious::Validator::Validation#is_valid>.
+Return value: Integer (0 or 1) as returned by L<Mojolicious::Validator::Validation#is_valid>:
+
+=over 4
+
+=item o 0 => Invalid
+
+=item o 1 => Valid
+
+=back
 
 For some non-undef $topic, $value and $units, here are some sample values for the hashref
 and the corresponding return values (using $units = ['cm', 'm']):
@@ -437,9 +486,9 @@ and the corresponding return values (using $units = ['cm', 'm']):
 
 =back
 
-Note: This method uses both L<Mojolicious::Validator> and L<Mojolicious::Validator::Validation>.
-
 =head2 check_equal_to($params, $topic, $other_topic)
+
+This test uses B<eq>.
 
 Parameters:
 
@@ -457,24 +506,50 @@ E.g.: $topic = 'password'.
 
 E.g.: $other_topic = 'confirm_password'.
 
-So the code tests (using eq) $$params{$topic} = $value_1 with $$params{$other_topic} = $value_2.
+So the code tests (using B<eq>) $$params{$topic} = $value_1 with $$params{$other_topic} = $value_2.
 
 =back
 
-Return value: The integer (0 or 1) returned by L<Mojolicious::Validator::Validation#is_valid>.
+Return value: Integer (0 or 1) as returned by L<Mojolicious::Validator::Validation#is_valid>.
 
-Note: This method uses both L<Mojolicious::Validator> and L<Mojolicious::Validator::Validation>.
+=over 4
 
-See also L</check_natural_number($params, $topic, $expected)>.
+=item o 0 => Invalid
+
+=item o 1 => Valid
+
+=back
+
+See also L</check_ascii_digits($params, $topic)> and L</check_number($params, $topic, $expected)>.
 
 =head2 check_key_exists($params, $topic)
 
-$params must be a hashref.
+Parameters:
 
-Called as check_key_exists({$topic => $value, ...}, $topic).
+=over 4
+
+=item o $params => A hashref
+
+E.g.: $params = {email_address => $value, ...}.
+
+=item o $topic => The name of the parameter being tested
+
+E.g.: $topic = 'email_address'.
+
+=back
+
+Return value: Integer (0 or 1):
+
+=over 4
+
+=item o 0 => Invalid
+
+=item o 1 => Valid
+
+=back
 
 For some non-undef $topic, here are some sample values for $params and the corresponding
-return values (using $value = 'x'):
+return values (using $topic = 'x'):
 
 =over 4
 
@@ -488,7 +563,7 @@ return values (using $value = 'x'):
 
 =item o {x => 0}: returns 1
 
-=item o {x => 'a'}: returns 1
+=item o {x => 'yz'}: returns 1
 
 =back
 
@@ -496,15 +571,67 @@ This method uses neither L<Mojolicious::Validator> nor L<Mojolicious::Validator:
 
 =head2 check_member($params, $topic, $set)
 
-=head2 check_natural_number($params, $topic)
+Parameters:
+
+=over 4
+
+=item o $params => A hashref
+
+E.g.: $params = {love_popup_ads => $value, ...}.
+
+=item o $topic => The name of the parameter being tested
+
+E.g.: $topic = 'love_popup_ads'.
+
+=item o $set => An arrayref of strings
+
+E.g.: ['Yes', B<'No'>].
+
+=back
+
+Return value: Integer (0 or 1) as returned by L<Mojolicious::Validator::Validation#is_valid>.
+
+=over 4
+
+=item o 0 => Invalid
+
+=item o 1 => Valid
+
+=back
 
 =head2 check_number($params, $topic, $expected)
 
-$params must be a hashref.
+This test uses B<==>.
 
-Called as check_number({$topic => $value, ...}, $topic, $expected).
+Parameters:
 
-For some non-undef $topic, $value and $expected, here are some sample values for $value and $count,
+=over 4
+
+=item o $params => A hashref
+
+E.g.: $params = {age => $value, ...}.
+
+=item o $topic => The name of the parameter being tested
+
+E.g.: $topic = 'age'.
+
+=item o $expected => An integer
+
+E.g.: 99.
+
+=back
+
+Return value: Integer (0 or 1):
+
+=over 4
+
+=item o 0 => Invalid
+
+=item o 1 => Valid
+
+=back
+
+For some non-undef $topic, $value and $expected, here are some sample values for $value and $expected,
 and the corresponding return values:
 
 =over 4
@@ -515,34 +642,47 @@ and the corresponding return values:
 
 =back
 
-Notes:
+See also L</check_ascii_digits($params, $topic)> and
+L</check_equal_to($params, $topic, $other_topic)>.
 
-=over 4
-
-=item o The method does a numeric test for equality.
-
-For a string test, see L</check_equal_to($params, $topic, $expected)>.
-
-=item o This method uses neither L<Mojolicious::Validator> nor L<Mojolicious::Validator::Validation>.
-
-=back
-
-See also L</check_equal_to($params, $topic, $expected)>.
+Note: This method uses neither L<Mojolicious::Validator> nor L<Mojolicious::Validator::Validation>.
 
 =head2 check_optional($params, $topic)
 
-$params must be a hashref.
+Parameters:
 
-Called as check_optional({$topic => $value, ...}, $topic).
+=over 4
+
+=item o $params => A hashref
+
+E.g.: $params = {download_now => $value, ...}.
+
+=item o $topic => The name of the parameter being tested
+
+E.g.: $topic = 'download_now'.
+
+=back
+
+Return value: Integer (0 or 1):
+
+=over 4
+
+=item o 0 => Invalid
+
+=item o 1 => Valid
+
+=back
 
 For some non-undef $topic, here are some sample values for $value and the corresponding return
 values:
 
 =over 4
 
-=item o undef: returns 0
+=item o {x => undef}: returns 0
 
-=item o All other values: return 1
+=item o {x => 0}: return 1
+
+Apart from undef, all other values of $value return 1.
 
 =back
 
@@ -570,6 +710,26 @@ Returns an object of type L<Mojolicious::Validator>
 
 In order to clarify which methods are part of this module and which are within
 L<Mojolicious::Validator> or L<Mojolicious::Validator::Validation>.
+
+=head2 Why did you not make any provision for Mojolicious-style filters?
+
+I will add them if there is any interest, but ATM I take the attitude: Release early and often.
+
+And I suggest you consider running L<Mojo::Util>.trim() on all input anyway.
+
+=head2 Why did you not use the module L<boolean>?
+
+I was tempted, but it would mean 2 extra, albeit small, complexities:
+
+=over 4
+
+=item o Another pre-requisite
+
+And that conflicts with the minimalistic philosophy of Mojolicious itself.
+
+=item o Convering the types of all the values returned from the Mojolicious code
+
+=back
 
 =head1 See Also
 
