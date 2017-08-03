@@ -195,21 +195,6 @@ sub check_number
 
 # -----------------------------------------------
 
-sub check_optional
-{
-	my($self, $params, $topic) = @_;
-
-	$self -> validation -> input($params);
-
-	return ! $self
-			-> validation
-			-> optional($topic)
-			-> is_valid;
-
-} # End of check_optional.
-
-# -----------------------------------------------
-
 sub check_required
 {
 	my($self, $params, $topic) = @_;

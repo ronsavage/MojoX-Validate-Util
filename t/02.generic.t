@@ -54,6 +54,26 @@ for my $i (0 .. $#data)
 	ok($checker -> check_equal_to($params, 'x', 'y') == $expected, $message); $test_count++;
 }
 
+@data =
+(
+	{},				# Fail.
+	{x => undef},	# Fail.
+	{x => ''},		# Fail.
+	{x => '0'},		# Pass.
+	{x => 0},		# Pass.
+	{x => 'x'},		# Pass.
+);
+
+for my $i (0 .. $#data)
+{
+	$params		= $data[$i];
+	$expected	= ($i <= 2) ? 0 : 1;
+	$infix		= $expected ? '' : 'not ';
+	$message	= (defined($$params{x}) ? "'$$params{x}'" : 'undef') . " is ${infix}a required parameter";
+
+	ok($checker -> check_required($params, 'x') == $expected, $message); $test_count++;
+}
+
 print "# Internal test count: $test_count\n";
 
 done_testing($test_count);
