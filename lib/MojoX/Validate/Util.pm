@@ -610,6 +610,49 @@ Note: This method uses neither L<Mojolicious::Validator> nor L<Mojolicious::Vali
 
 =head2 check_required($params, $topic)
 
+Parameters:
+
+=over 4
+
+=item o $params => A hashref
+
+E.g.: $params = {email_address => $value, ...}.
+
+=item o $topic => The name of the parameter being tested
+
+E.g.: $topic = 'email_address'.
+
+=back
+
+Return value: Integer (0 or 1) as returned by L<Mojolicious::Validator::Validation#is_valid>:
+
+=over 4
+
+=item o 0 => Invalid
+
+=item o 1 => Valid
+
+=back
+
+For some non-undef $topic, here are some sample values for $params and the corresponding
+return values (using $topic = 'x'):
+
+=over 4
+
+=item o {}: returns 0
+
+=item o {x => undef}: returns 0
+
+=item o {x => ''}: returns 0 (because the length is 0)
+
+=item o {x => '0'}: returns 1
+
+=item o {x => 0}: returns 1
+
+=item o {x => 'yz'}: returns 1
+
+=back
+
 =head2 check_url($params, $topic)
 
 =head2 new()
