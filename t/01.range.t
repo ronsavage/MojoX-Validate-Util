@@ -3,8 +3,6 @@
 use strict;
 use warnings;
 
-use Data::Dumper::Concise; # For Dumper().
-
 use Test::More;
 
 use MojoX::Validate::Util;

@@ -4,13 +4,22 @@ use 5.018;
 use warnings;
 use strict;
 
-use Data::Dumper::Concise; # For Dumper().
-
 use Mojolicious;
 use Mojolicious::Validator;
 use Mojolicious::Validator::Validation;
 
-# -------------------------------------
+# ------------------------------------------------
+
+sub hashref2string
+{
+	my($hashref) = @_;
+	$hashref ||= {};
+
+	return '{' . join(', ', map{defined($$hashref{$_}) ? qq|$_ => "$$hashref{$_}"| : "$_ => undef"} sort keys %$hashref) . '}';
+
+} # End of hashref2string.
+
+# ------------------------------------------------
 
 say "Mojolicious::VERSION: $Mojolicious::VERSION";
 
@@ -24,6 +33,7 @@ my(@data)		=
 	{b => undef, c => '', d => 0, e => 'e', f => 'x', x => 'x'},
 );
 
+my($errors);
 my($params);
 my($validator, $validation);
 
@@ -35,7 +45,7 @@ for my $i (0 .. $#data)
 
 	$validation -> input($params);
 
-	say 'params:   ', Dumper($params);
+	say 'params:   ', hashref2string($params);
 
 	for my $topic (@topics)
 	{
@@ -52,7 +62,10 @@ for my $i (0 .. $#data)
 				say 'required: ', $validation -> $kind($topic) -> is_valid;
 			}
 
-			say 'errors:   ', Dumper($validation -> error($topic) );
+			$errors	= $validation -> error($topic);
+			$errors	= defined($errors) ? join(', ', @$errors) : '';
+
+			say "errors:   $errors";
 			say 'failed:   ', join(', ', @{$validation -> failed});
 			say 'passed:   ', join(', ', @{$validation -> passed});
 			say '-' x 15;
