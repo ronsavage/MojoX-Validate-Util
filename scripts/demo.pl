@@ -14,11 +14,14 @@ use Mojolicious::Validator::Validation;
 
 say "Mojolicious::VERSION: $Mojolicious::VERSION";
 
-my(@topics)		= ('a', 'b', 'c', 'd');
+# These topics are keys into the hashref within @data.
+
+my(@topics)		= ('a', 'b', 'c', 'd', 'e', 'f');
 my(@data)		=
 (
-	{},
-	{a => undef, b => '', c => 0, d => 'x', x => 'x'},
+	# This hashref deliberately does not contain the key 'a'.
+
+	{b => undef, c => '', d => 0, e => 'e', f => 'x', x => 'x'},
 );
 
 my($params);
@@ -36,23 +39,35 @@ for my $i (0 .. $#data)
 
 	for my $topic (@topics)
 	{
-		# When $params = {}, just test 'a'.
-
-		next if ( ($i == 0) && ($topic ne 'a') );
-
 		say "i: @{[$i + 1]}: topic: $topic. Using required(): ";
-		say 'required: ', $validation -> required($topic) -> is_valid;
+
+		if ($topic eq 'e')
+		{
+			say 'e == x:   ', $validation -> required($topic) -> equal_to('x') -> is_valid;
+		}
+		else
+		{
+			say 'required: ', $validation -> required($topic) -> is_valid;
+		}
+
 		say 'errors:   ', Dumper($validation -> error($topic) );
 		say 'failed:   ', join(', ', @{$validation -> failed});
 		say 'passed:   ', join(', ', @{$validation -> passed});
-#		say 'x == x:   ', $validation -> required($topic) -> equal_to('x') -> is_valid;
 		say '-' x 15;
 		say "i: @{[$i + 1]}: topic: $topic. Using optional(): ";
-		say 'optional: ', $validation -> optional($topic) -> is_valid;
+
+		if ($topic eq 'e')
+		{
+			say 'e == x:   ', $validation -> optional($topic) -> equal_to('x') -> is_valid;
+		}
+		else
+		{
+			say 'required: ', $validation -> optional($topic) -> is_valid;
+		}
+
 		say 'errors:   ', Dumper($validation -> error($topic) );
 		say 'failed:   ', join(', ', @{$validation -> failed});
 		say 'passed:   ', join(', ', @{$validation -> passed});
-#		say 'x == x:   ', $validation -> optional($topic) -> equal_to('x') -> is_valid;
 
 		say '-' x 30;
 	}

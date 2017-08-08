@@ -195,6 +195,21 @@ sub check_number
 
 # -----------------------------------------------
 
+sub check_optional
+{
+	my($self, $params, $topic) = @_;
+
+	$self -> validation -> input($params);
+
+	return $self
+			-> validation
+			-> optional($topic)
+			-> is_valid;
+
+} # End of check_optional.
+
+# -----------------------------------------------
+
 sub check_required
 {
 	my($self, $params, $topic) = @_;
@@ -291,7 +306,7 @@ This is the printout of synopsis.pl:
 	pass: 10
 	total: 13
 
-See also t/*.t.
+See also scripts/demo.pl and t/*.t.
 
 =head1 Description
 
@@ -449,7 +464,7 @@ and the corresponding return values (using $units = ['cm', 'm']):
 
 =head2 check_equal_to($params, $topic, $other_topic)
 
-This test uses B<eq>.
+This test uses B<eq>. For a test using B<==>, see L</check_number($params, $topic, $other_topic)>.
 
 Parameters:
 
@@ -562,7 +577,7 @@ Return value: Integer (0 or 1) as returned by L<Mojolicious::Validator::Validati
 
 =head2 check_number($params, $topic, $expected)
 
-This test uses B<==>.
+This test uses B<==>. For a test using B<eq>, see L</check_equal_to($params, $topic, $other_topic)>.
 
 Parameters:
 
@@ -607,6 +622,53 @@ See also L</check_ascii_digits($params, $topic)> and
 L</check_equal_to($params, $topic, $other_topic)>.
 
 Note: This method uses neither L<Mojolicious::Validator> nor L<Mojolicious::Validator::Validation>.
+
+=head2 check_optional($params, $topic)
+
+Parameters:
+
+=over 4
+
+=item o $params => A hashref
+
+E.g.: $params = {email_address => $value, ...}.
+
+=item o $topic => The name of the parameter being tested
+
+E.g.: $topic = 'email_address'.
+
+=back
+
+Return value: Integer (0 or 1) as returned by L<Mojolicious::Validator::Validation#is_valid>:
+
+=over 4
+
+=item o 0 => Invalid
+
+=item o 1 => Valid
+
+=back
+
+For some non-undef $topic, here are some sample values for $params and the corresponding
+return values (using $topic = 'x'):
+
+=over 4
+
+=item o {}: returns 0
+
+=item o {x => undef}: returns 0
+
+=item o {x => ''}: returns 0 (because the length is 0)
+
+=item o {x => '0'}: returns 1
+
+=item o {x => 0}: returns 1
+
+=item o {x => 'yz'}: returns 1
+
+=back
+
+See also L</check_required($params, $topic)>.
 
 =head2 check_required($params, $topic)
 
@@ -653,6 +715,8 @@ return values (using $topic = 'x'):
 
 =back
 
+See also L</check_optional($params, $topic)>.
+
 =head2 check_url($params, $topic)
 
 =head2 new()
@@ -676,6 +740,10 @@ Returns an object of type L<Mojolicious::Validator>
 In order to clarify which methods are part of this module and which are within
 L<Mojolicious::Validator> or L<Mojolicious::Validator::Validation>.
 
+=head2 Why provide both check_optional() and check_required()?
+
+The former is present just in case you need it.
+
 =head2 Why did you not make any provision for Mojolicious-style filters?
 
 I will add them if there is any interest, but ATM I take the attitude: Release early and often.
@@ -692,7 +760,7 @@ I was tempted, but it would mean 2 extra, albeit small, complexities:
 
 And that conflicts with the minimalistic philosophy of Mojolicious itself.
 
-=item o Convering the types of all the values returned from the Mojolicious code
+=item o Handling the types of all the values returned from the Mojolicious code
 
 =back
 
