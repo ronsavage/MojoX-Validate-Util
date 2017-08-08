@@ -253,9 +253,10 @@ C<MojoX::Validate::Util> - A very convenient wrapper around Mojolicious::Validat
 =head1 Synopsis
 
 This program ships as scripts/synopsis.pl.
-It is a copy of t/01.range.t, without the Test::More parts.
 
 	#!/usr/bin/env perl
+	#
+	# This is a copy of t/01.range.t, without the Test::More parts.
 
 	use strict;
 	use warnings;
@@ -263,7 +264,6 @@ It is a copy of t/01.range.t, without the Test::More parts.
 	use MojoX::Validate::Util;
 
 	# ------------------------------------------------
-	# This is a copy of t/01.range.t, without the Test::More parts.
 
 	my(%count)		= (fail => 0, pass => 0, total => 0);
 	my($checker)	= MojoX::Validate::Util -> new;
@@ -278,7 +278,7 @@ It is a copy of t/01.range.t, without the Test::More parts.
 		{height => '1 cm'},      # Pass.
 		{height => '1m'},        # Pass.
 		{height	=> '40-70.5cm'}, # Pass.
-		{height	=> '1.5-2m'},    # Pass.
+		{height	=> '1.5 -2m'},   # Pass.
 		{height => 'z1'},        # Fail. Not numeric.
 	);
 
@@ -289,8 +289,8 @@ It is a copy of t/01.range.t, without the Test::More parts.
 	{
 		$count{total}++;
 
-		$params		= $data[$i];
-		$expected	= ( ($i == 1) || ($i == $#data) ) ? 0 : 1;
+		$params   = $data[$i];
+		$expected = ( ($i == 1) || ($i == $#data) ) ? 0 : 1;
 
 		$count{fail}++ if ($expected == 0);
 
@@ -302,9 +302,9 @@ It is a copy of t/01.range.t, without the Test::More parts.
 This is the printout of synopsis.pl:
 
 	Test counts:
-	fail: 3
-	pass: 10
-	total: 13
+	fail: 2
+	pass: 6
+	total: 8
 
 See also scripts/demo.pl and t/*.t.
 

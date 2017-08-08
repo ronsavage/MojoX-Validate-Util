@@ -1,4 +1,6 @@
 #!/usr/bin/env perl
+#
+# This is a copy of t/01.range.t, without the Test::More parts.
 
 use strict;
 use warnings;
@@ -6,7 +8,6 @@ use warnings;
 use MojoX::Validate::Util;
 
 # ------------------------------------------------
-# This is a copy of t/01.range.t, without the Test::More parts.
 
 my(%count)		= (fail => 0, pass => 0, total => 0);
 my($checker)	= MojoX::Validate::Util -> new;
