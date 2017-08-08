@@ -607,8 +607,8 @@ Return value: Integer (0 or 1):
 
 =back
 
-For some non-undef $topic, $value and $expected, here are some sample values for $value and $expected,
-and the corresponding return values:
+For some non-undef $topic, $value and $expected, here are some sample values for $value and
+$expected, and the corresponding return values:
 
 =over 4
 
@@ -670,6 +670,8 @@ return values (using $topic = 'x'):
 
 See also L</check_required($params, $topic)>.
 
+See scripts/demo.pl and t/03.email.address.t.
+
 =head2 check_required($params, $topic)
 
 Parameters:
@@ -716,6 +718,8 @@ return values (using $topic = 'x'):
 =back
 
 See also L</check_optional($params, $topic)>.
+
+See scripts/demo.pl and t/03.email.address.t.
 
 =head2 check_url($params, $topic)
 
@@ -789,7 +793,8 @@ This will be much clearer after you study the output of scripts/demo.pl and t/03
 
 =head2 Why did you not make any provision for Mojolicious-style filters?
 
-I will add them if there is any interest, but ATM I take the attitude: Release early and often.
+I will add them if there is any interest, but ATM I take the attitude: Release early and release
+often.
 
 =head2 Why did you not use the module L<boolean>?
 
