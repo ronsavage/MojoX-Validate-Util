@@ -719,6 +719,45 @@ See also L</check_optional($params, $topic)>.
 
 =head2 check_url($params, $topic)
 
+Parameters:
+
+=over 4
+
+=item o $params => A hashref
+
+E.g.: $params = {homepage => $value, ...}.
+
+=item o $topic => The name of the parameter being tested
+
+E.g.: $topic = 'homepage'.
+
+=back
+
+Return value: Integer (0 or 1) as returned by L<Mojolicious::Validator::Validation#is_valid>:
+
+=over 4
+
+=item o 0 => Invalid
+
+=item o 1 => Valid
+
+=back
+
+For some non-undef $topic, here are some sample values for $params and the corresponding
+return values (using $topic = 'homepage'):
+
+=over 4
+
+=item o {homepage => 'localhost'}: returns 0.
+
+=item o {homepage => 'savage.net.au'}: returns 1.
+
+=item o {homepage => 'http://savage.net.au'}: returns 1.
+
+=item o {homepage => 'https://savage.net.au'}: returns 1.
+
+=back
+
 =head2 new()
 
 =head2 url_finder()
@@ -747,8 +786,6 @@ The former is present just in case you need it.
 =head2 Why did you not make any provision for Mojolicious-style filters?
 
 I will add them if there is any interest, but ATM I take the attitude: Release early and often.
-
-And I suggest you consider running L<Mojo::Util>.trim() on all input anyway.
 
 =head2 Why did you not use the module L<boolean>?
 
