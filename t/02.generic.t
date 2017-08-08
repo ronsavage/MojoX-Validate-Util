@@ -95,7 +95,7 @@ for my $i (0 .. $#data)
 	$params		= $data[$i];
 	$expected	= ($i == 0) ? 0 : 1;
 	$infix		= $expected ? '' : 'not ';
-	$message	= (defined($$params{x}) ? "'$$params{x}'" : 'undef') . " is ${infix}a required parameter";
+	$message	= (defined($$params{homepage}) ? "'$$params{homepage}'" : 'undef') . " is ${infix}a required parameter";
 	$result		= $checker -> check_url($params, 'homepage') ? 1 : 0;
 
 	ok($result == $expected, $message); $test_count++;

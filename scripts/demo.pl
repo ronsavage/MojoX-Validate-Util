@@ -39,37 +39,24 @@ for my $i (0 .. $#data)
 
 	for my $topic (@topics)
 	{
-		say "i: @{[$i + 1]}: topic: $topic. Using required(): ";
-
-		if ($topic eq 'e')
+		for my $kind (qw/required optional/)
 		{
-			say 'e == x:   ', $validation -> required($topic) -> equal_to('x') -> is_valid;
-		}
-		else
-		{
-			say 'required: ', $validation -> required($topic) -> is_valid;
-		}
+			say "i: @{[$i + 1]}: topic: $topic. Using $kind(): ";
 
-		say 'errors:   ', Dumper($validation -> error($topic) );
-		say 'failed:   ', join(', ', @{$validation -> failed});
-		say 'passed:   ', join(', ', @{$validation -> passed});
-		say '-' x 15;
-		say "i: @{[$i + 1]}: topic: $topic. Using optional(): ";
+			if ($topic =~ /[ef]/)
+			{
+				say "$topic == x:   ", $validation -> $kind($topic) -> equal_to('x') -> is_valid;
+			}
+			else
+			{
+				say 'required: ', $validation -> $kind($topic) -> is_valid;
+			}
 
-		if ($topic eq 'e')
-		{
-			say 'e == x:   ', $validation -> optional($topic) -> equal_to('x') -> is_valid;
+			say 'errors:   ', Dumper($validation -> error($topic) );
+			say 'failed:   ', join(', ', @{$validation -> failed});
+			say 'passed:   ', join(', ', @{$validation -> passed});
+			say '-' x 15;
 		}
-		else
-		{
-			say 'required: ', $validation -> optional($topic) -> is_valid;
-		}
-
-		say 'errors:   ', Dumper($validation -> error($topic) );
-		say 'failed:   ', join(', ', @{$validation -> failed});
-		say 'passed:   ', join(', ', @{$validation -> passed});
-
-		say '-' x 30;
 	}
 }
 
