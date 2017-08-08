@@ -79,3 +79,31 @@ for my $i (0 .. $#data)
 	}
 }
 
+@data =
+(
+	{love_popup_ads => 'No'},
+	{love_popup_ads => 'Nyet'},
+);
+
+my($topic)	= 'love_popup_ads';
+my(@set)	= ('Yes', 'No');
+
+my($infix);
+my($result);
+
+for my $i (0 .. $#data)
+{
+	$params = $data[$i];
+
+	say 'params:   ', hashref2string($params);
+
+	$validator	= Mojolicious::Validator -> new;
+	$validation	= Mojolicious::Validator::Validation->new(validator => $validator);
+
+	$validation -> input($params); # Not a required call with MojoX::Validate::Util.
+
+	$infix	= ($i == 0) ? 'is' : 'is not';
+	$result = $validation -> required($topic) -> in(@set) -> is_valid ? 1 : 0;
+
+	say "membership: $result (meaning '$$params{love_popup_ads}' $infix in the set @{[join(', ', map{qq|'$_'|} @set)]})";
+}
