@@ -9,6 +9,14 @@ use MojoX::Validate::Util; # For the version #.
 
 use Test::More;
 
+use Mojolicious;
+use Mojolicious::Validator;
+use Moo;
+use Params::Classify;
+use strict;
+use Types::Standard;
+use URI::Find::Schemeless;
+use warnings;
 
 # ----------------------
 
@@ -16,9 +24,17 @@ pass('All external modules loaded');
 
 my(@modules) = qw
 /
+	Mojolicious
+	Mojolicious::Validator
+	Moo
+	Params::Classify
+	strict
+	Types::Standard
+	URI::Find::Schemeless
+	warnings
 /;
 
-diag "TestingMojoX::Validate::Util V $MojoX::Validate::Util::VERSION";
+diag "Testing MojoX::Validate::Util V $MojoX::Validate::Util::VERSION";
 
 for my $module (@modules)
 {
