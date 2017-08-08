@@ -796,7 +796,7 @@ This will be much clearer after you study the output of scripts/demo.pl and t/03
 I will add them if there is any interest, but ATM I take the attitude: Release early and release
 often.
 
-=head2 Why did you not use the module L<boolean>?
+=head2 Why did you not use the module C<boolean>?
 
 I was tempted, but it would mean 2 extra, albeit small, complexities:
 
@@ -826,7 +826,7 @@ Version numbers < 1.00 represent development versions. From 1.00 up, they are pr
 
 =head1 Repository
 
-L<https://github.com/ronsavage/MojoX::Validate::Util>
+L<https://github.com/ronsavage/MojoX-Validate-Util>
 
 =head1 Support
 
