@@ -781,7 +781,11 @@ L<Mojolicious::Validator> or L<Mojolicious::Validator::Validation>.
 
 =head2 Why provide both check_optional() and check_required()?
 
-The former is present just in case you need it.
+Calling either C<required()> or C<optional()> within L<Mojolicious::Validator::Validation>, and then
+calling C<is_valid()> can return the same value, but the difference becomes apparent after (then)
+calling methods such as C<failed()>, C<has_error()>, C<output()> and C<passed()>.
+
+This will be much clearer after you study the output of scripts/demo.pl and t/03.email.address.t.
 
 =head2 Why did you not make any provision for Mojolicious-style filters?
 

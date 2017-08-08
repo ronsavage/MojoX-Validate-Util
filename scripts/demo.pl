@@ -34,16 +34,13 @@ my(@data)		=
 );
 
 my($errors);
+my($output);
 my($params);
 my($validator, $validation);
 
 for my $i (0 .. $#data)
 {
-	$params		= $data[$i];
-	$validator	= Mojolicious::Validator -> new;
-	$validation	= Mojolicious::Validator::Validation->new(validator => $validator);
-
-	$validation -> input($params);
+	$params = $data[$i];
 
 	say 'params:   ', hashref2string($params);
 
@@ -51,23 +48,32 @@ for my $i (0 .. $#data)
 	{
 		for my $kind (qw/required optional/)
 		{
+			$validator	= Mojolicious::Validator -> new;
+			$validation	= Mojolicious::Validator::Validation->new(validator => $validator);
+
+			$validation -> input($params); # Not a required call with MojoX::Validate::Util.
+
 			say "i: @{[$i + 1]}: topic: $topic. Using $kind(): ";
 
 			if ($topic =~ /[ef]/)
 			{
-				say "$topic == x:   ", $validation -> $kind($topic) -> equal_to('x') -> is_valid;
+				say "$topic == x:    ", $validation -> $kind($topic) -> equal_to('x') -> is_valid;
 			}
 			else
 			{
-				say 'required: ', $validation -> $kind($topic) -> is_valid;
+				say 'required:  ', $validation -> $kind($topic) -> is_valid;
 			}
 
 			$errors	= $validation -> error($topic);
 			$errors	= defined($errors) ? join(', ', @$errors) : '';
+			$output	= $validation -> output;
+			$output	= defined($output) ? hashref2string($output) : '';
 
-			say "errors:   $errors";
-			say 'failed:   ', join(', ', @{$validation -> failed});
-			say 'passed:   ', join(', ', @{$validation -> passed});
+			say 'has_error: ', defined($validation -> has_error) ? 1 : 0;
+			say "errors:    $errors";
+			say "output:    $output";
+			say 'failed:    ', join(', ', @{$validation -> failed});
+			say 'passed:    ', join(', ', @{$validation -> passed});
 			say '-' x 15;
 		}
 	}

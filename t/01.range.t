@@ -9,8 +9,7 @@ use MojoX::Validate::Util;
 
 # ------------------------------------------------
 
-my($test_count)	= 0;
-my($checker)	= MojoX::Validate::Util -> new;
+my($test_count) = 0;
 
 my(@data) =
 (
@@ -24,6 +23,7 @@ my(@data) =
 	{height => 'z1'},			# Fail. Not numeric.
 );
 
+my($checker);
 my($expected);
 my($infix);
 my($message);
@@ -31,6 +31,7 @@ my($params);
 
 for my $i (0 .. $#data)
 {
+	$checker	= MojoX::Validate::Util -> new;
 	$params		= $data[$i];
 	$expected	= ( ($i == 1) || ($i == $#data) ) ? 0 : 1;
 	$infix		= $expected ? '' : 'not ';
