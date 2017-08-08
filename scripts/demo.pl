@@ -1,6 +1,5 @@
 #!/usr/bin/env perl
 
-use 5.018;
 use warnings;
 use strict;
 
@@ -21,7 +20,7 @@ sub hashref2string
 
 # ------------------------------------------------
 
-say "Mojolicious::VERSION: $Mojolicious::VERSION";
+print "Mojolicious::VERSION: $Mojolicious::VERSION. \n";
 
 # These topics are keys into the hashref within @data.
 
@@ -42,7 +41,7 @@ for my $i (0 .. $#data)
 {
 	$params = $data[$i];
 
-	say 'params:   ', hashref2string($params);
+	print 'params:   ', hashref2string($params), ". \n";
 
 	for my $topic (@topics)
 	{
@@ -53,15 +52,15 @@ for my $i (0 .. $#data)
 
 			$validation -> input($params); # Not a required call with MojoX::Validate::Util.
 
-			say "i: @{[$i + 1]}: topic: $topic. Using $kind(): ";
+			print "i: @{[$i + 1]}: topic: $topic. Using $kind(): \n";
 
 			if ($topic =~ /[ef]/)
 			{
-				say "$topic == x:    ", $validation -> $kind($topic) -> equal_to('x') -> is_valid;
+				print "$topic == x:    ", $validation -> $kind($topic) -> equal_to('x') -> is_valid, ". \n";
 			}
 			else
 			{
-				say 'required:  ', $validation -> $kind($topic) -> is_valid;
+				print 'required:  ', $validation -> $kind($topic) -> is_valid, ". \n";
 			}
 
 			$errors	= $validation -> error($topic);
@@ -69,12 +68,12 @@ for my $i (0 .. $#data)
 			$output	= $validation -> output;
 			$output	= defined($output) ? hashref2string($output) : '';
 
-			say 'has_error: ', defined($validation -> has_error) ? 1 : 0;
-			say "errors:    $errors";
-			say "output:    $output";
-			say 'failed:    ', join(', ', @{$validation -> failed});
-			say 'passed:    ', join(', ', @{$validation -> passed});
-			say '-' x 15;
+			print 'has_error: ', defined($validation -> has_error) ? 1 : 0, ". \n";
+			print "errors:    $errors. \n";
+			print "output:    $output. \n";
+			print 'failed:    ', join(', ', @{$validation -> failed}), ". \n";
+			print 'passed:    ', join(', ', @{$validation -> passed}), ". \n";
+			print '-' x 15, ". \n";
 		}
 	}
 }
@@ -95,7 +94,7 @@ for my $i (0 .. $#data)
 {
 	$params = $data[$i];
 
-	say 'params:   ', hashref2string($params);
+	print 'params:     ', hashref2string($params), ". \n";
 
 	$validator	= Mojolicious::Validator -> new;
 	$validation	= Mojolicious::Validator::Validation->new(validator => $validator);
@@ -105,5 +104,8 @@ for my $i (0 .. $#data)
 	$infix	= ($i == 0) ? 'is' : 'is not';
 	$result = $validation -> required($topic) -> in(@set) -> is_valid ? 1 : 0;
 
-	say "membership: $result (meaning '$$params{love_popup_ads}' $infix in the set @{[join(', ', map{qq|'$_'|} @set)]})";
+	print "Membership: $result (meaning '$$params{love_popup_ads}' $infix in the set "
+		. "@{[join(', ', map{qq|'$_'|} @set)]}). \n";
 }
+
+print "Finished. \n";
