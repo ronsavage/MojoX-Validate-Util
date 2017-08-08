@@ -840,7 +840,7 @@ L<MojoX::Validate::Util> was written by Ron Savage I<E<lt>ron@savage.net.auE<gt>
 
 My homepage: L<http://savage.net.au/>.
 
-=head1 Copyright
+=head1 LICENSE AND COPYRIGHT
 
 Australian copyright (c) 2017, Ron Savage.
 
