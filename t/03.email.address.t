@@ -36,7 +36,7 @@ for my $i (0 .. $#data)
 		$message	= "i: $i. kind: $kind. Calling $method(). '$$params{email_address}' is ${infix}a$suffix $kind email address";
 
 print STDERR "\n==> i: $i. kind: $kind. Expected <$expected>\n";
-print STDERR '==> i: $i. kind: $kind.      Got <', $checker -> $method($params, 'email_address'), ">\n";
+print STDERR "==> i: $i. kind: $kind.      Got <", $checker -> $method($params, 'email_address'), ">\n";
 
 		ok($checker -> $method($params, 'email_address') == $expected, $message); $test_count++;
 
