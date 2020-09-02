@@ -34,8 +34,9 @@ for my $i (0 .. $#data)
 		$suffix		= ($kind eq 'required') ? '' : 'n'; # a || an.
 		$method		= "check_$kind";
 		$message	= "i: $i. kind: $kind. Calling $method(). '$$params{email_address}' is ${infix}a$suffix $kind email address";
-print STDERR '==>      Got <', $checker -> $method($params, 'email_address'), ">\n";
+
 print STDERR "==> Expected <$expected>\n";
+print STDERR '==>      Got <', $checker -> $method($params, 'email_address'), ">\n";
 
 		ok($checker -> $method($params, 'email_address') == $expected, $message); $test_count++;
 
