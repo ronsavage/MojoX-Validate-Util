@@ -74,9 +74,6 @@ for my $i (0 .. $#data)
 	$checker	= MojoX::Validate::Util -> new;
 	$params		= $data[$i];
 	$expected	= ($i <= 1) ? 0 : 1;
-
-#	$checker -> validation -> optional('x', 'not_empty') if (! $expected);
-
 	$infix		= $expected ? '' : 'not ';
 	$message	= (defined($$params{x}) ? "'$$params{x}'" : 'undef') . " is ${infix}a required parameter";
 	$result		= $checker -> check_required($params, 'x') ? 1 : 0;
